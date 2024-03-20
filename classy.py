@@ -84,7 +84,7 @@ class Population:
         new_pop = []
         self.average_score = sum([x.success for x in self.population])/len(self.population)
         self.population = sorted(self.population, key = lambda x: x.success)
-        self.best_score = self.population[1].success
+        self.best_score = self.population[0].success
         for x in self.population[0:int(math.sqrt(len(self.population)))]:
             for xx in range(int(math.sqrt(len(self.population)))):
                 new_pop.append(x.varied_copy(self.randomness))

@@ -9,6 +9,7 @@ playfield = Playfield(3, 6, Vec(1.5, 3), Vec(1.5, 0.2))
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
+p.font.init()
 font = p.font.SysFont('Monocraft', 20)
 
 
@@ -31,14 +32,14 @@ def drawer(object_list, place_to_draw_stuff=screen):
         p.draw.circle(place_to_draw_stuff, i.color.color(), ball_xy(i.pos), 1)
 
 
-def make_display(text, top_left, text_color=Vec(255, 255, 255), bg_color=None):
-    display, display_rect = font.render(text, True, text_color, bg_color)
+def make_display(text, top_left, text_color=(255, 255, 255), bg_color=None):
+    display = font.render(text, True, text_color, bg_color)
+    display_rect = display.get_rect()
     display_rect.topleft = top_left
-    screen.blit(display, display_rect)
     return display, display_rect
 
 
-def draw_text(text, top_left, text_color=Vec(255, 255, 255)):
+def draw_text(text, top_left=(0, 0), text_color=(255, 255, 255)):
     display, display_rect = make_display(text, (0, 0), text_color=text_color, bg_color=None)
     display_rect.topleft = top_left
     screen.blit(display, display_rect)
@@ -74,6 +75,9 @@ while True:
 
     if running:
         # background
+        draw_text(f"Randomness: {main[0].randomness}")
+        draw_text(f"Average Score: {main[0].average_score}", (0, 20))
+        draw_text(f"Best Score: {main[0].best_score}", (0, 40))
         for x in range(20):
             for x in main:
                 if x.step():
