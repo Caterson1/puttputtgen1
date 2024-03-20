@@ -1,0 +1,106 @@
+import math
+
+from constantinopal import *
+from vectors import *
+
+
+class Playfield:
+    def __init__(self, width, height, holexy: Vec, startpos: Vec, hole_r: int = 0.05, extrawalls = []):
+        self.height = height
+        self.width = width
+        self.holexy = holexy
+        self.startpos = startpos
+        self.hole_r = hole_r
+        self.walls = []
+
+class Ball:
+    def __init__(self, playfield: Playfield, angle: float, startpos:Vec = Vec(), speed: int = 10, color: Vec = None, wind: Vec = Vec()):
+        self.playfield = playfield
+        self.pos = playfield.startpos
+        self.pos_init = playfield.startpos
+        self.speed = speed
+        self.v = vectorize(speed, angle)
+        self.a = Vec()
+        self.forces = [norm(self.v) * friction]
+        self.angle = angle
+        self.m = 0.0425
+        self.success = None
+        if color is None:
+            self.color = (randvec()*255).__abs__()
+        else:
+            self.color = color
+        self.r = 0.021335
+        self.wind = wind
+
+    def bounce_off_wall(self, wall_norm):
+        self.v -= rotate(2 * dot(self.v, wall_norm) * wall_norm, random.gauss(0, wall_randomness))
+
+    def in_hole(self):
+        return -0.03125 * mag(self.v) + self.playfield.hole_r >= mag(self.pos - self.playfield.holexy)
+
+    def step(self):
+        if self.success is not True:
+            self.pos += self.v * dt
+            if self.pos.x > self.playfield.width:
+                self.bounce_off_wall(Vec(-1, 0))
+            elif self.pos.x < 0:
+                self.bounce_off_wall(Vec(1, 0))
+            if self.pos.y > self.playfield.height:
+                self.bounce_off_wall(Vec(0, -1))
+            elif self.pos.y < 0:
+                self.bounce_off_wall(Vec(0, 1))
+            self.v += self.a * dt
+            self.a = sum(self.forces, Vec())/self.m
+            self.forces = [norm(self.v) * friction]
+            if self.in_hole():
+                print("SUCCESS")
+                self.success = 0
+            if mag(self.v) <= 0.01:
+                self.success = mag(self.pos - self.playfield.holexy)
+
+    def varied_copy(self, randomness):
+        new_angle = random.gauss(self.angle, randomness)
+        new_speed = random.gauss(self.speed, randomness)
+        new_color = ((self.angle - new_angle)/360 + (self.speed - new_speed)/self.speed)/2 * self.color + self.color
+        return Ball(self.playfield, new_angle, self.pos_init, new_speed,
+                    color=new_color)
+
+
+class Population:
+    def __init__(self, popsize, randomness, defaultball: Ball, survival_rate = 10):
+        self.population = [Ball(defaultball.playfield, random.randrange(0, 360), defaultball.pos,
+                                mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in range(popsize)]
+        self.randomness = randomness
+        self.average_score = 0
+        self.best_score = 0
+
+    def all_landed(self):
+        for ball in self.population:
+            if ball.success is None:
+                return False
+        return True
+
+    def reproduction(self):
+        new_pop = []
+        self.average_score = sum([x.success for x in self.population])/len(self.population)
+        self.population = sorted(self.population, key = lambda x: x.success)
+        self.best_score = self.population[1].success
+        for x in self.population[0:int(math.sqrt(len(self.population)))]:
+            for xx in range(int(math.sqrt(len(self.population)))):
+                new_pop.append(x.varied_copy(self.randomness))
+        self.population = new_pop
+        del new_pop
+
+    def step(self):
+        for ball in self.population:
+            ball.step()
+        if self.all_landed():
+            self.reproduction()
+            self.randomness *= .99
+            return True
+        else:
+            return False
+
+
+
+
