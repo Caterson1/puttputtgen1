@@ -45,6 +45,11 @@ def draw_text(text, top_left=(0, 0), text_color=(255, 255, 255)):
     screen.blit(display, display_rect)
 
 
+def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255)):
+    for x in texts:
+        draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color)
+
+
 main = [Population(100, .5, Ball(playfield, 45, Vec(0, .2), speed=1))]
 
 running = False
@@ -75,9 +80,7 @@ while True:
 
     if running:
         # background
-        draw_text(f"Randomness: {main[0].randomness}")
-        draw_text(f"Average Score: {main[0].average_score}", (0, 20))
-        draw_text(f"Best Score: {main[0].best_score}", (0, 40))
+
         for x in range(20):
             for x in main:
                 if x.step():
@@ -85,7 +88,10 @@ while True:
                     p.draw.rect(screen, (166, 203, 164), playfield_rect)
                 drawer(x.population)
         p.draw.circle(screen, (255, 255, 255), ball_xy(playfield.holexy), playfield.hole_r * scale)
-
+        draw_more_text([f"Randomness: {main[0].randomness}",
+                        f"Average Score: {main[0].average_score}",
+                        f"Best Score: {main[0].best_score.success}",
+                        f"Best Angle: {main[0].best_score.angle}"])
         p.display.flip()
 
     # This sets an upper limit on the frame rate (here 100 frames per second)
