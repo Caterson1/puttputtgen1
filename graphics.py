@@ -5,7 +5,7 @@ from classy import *
 
 window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
 screen = p.display.set_mode((WIDTH, HEIGHT))
-playfield = Playfield(3, 6, Vec(1.5, 3), Vec(1.5, 0.2))
+playfield = Playfield(3, 6, Vec(.8, 5.2), Vec(1.5, 0.2), obstacles=[HillValley(Vec(1, 2)), HillValley(Vec(3, 4), False)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
@@ -39,15 +39,15 @@ def make_display(text, top_left, text_color=(255, 255, 255), bg_color=None):
     return display, display_rect
 
 
-def draw_text(text, top_left=(0, 0), text_color=(255, 255, 255)):
-    display, display_rect = make_display(text, (0, 0), text_color=text_color, bg_color=None)
+def draw_text(text, top_left=(0, 0), text_color=(255, 255, 255), bg_color=None):
+    display, display_rect = make_display(text, (0, 0), text_color=text_color, bg_color=bg_color)
     display_rect.topleft = top_left
     screen.blit(display, display_rect)
 
 
-def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255)):
+def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255), bg_color=None):
     for x in texts:
-        draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color)
+        draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color, bg_color)
 
 
 main = [Population(100, .5, Ball(playfield, 45, Vec(0, .2), speed=1))]
@@ -91,9 +91,10 @@ while True:
         draw_more_text([f"Randomness: {main[0].randomness}",
                         f"Average Score: {main[0].average_score}",
                         f"Best Score: {main[0].best_score.success}",
-                        f"Best Angle: {main[0].best_score.angle}"])
+                        f"Best Angle: {main[0].best_score.angle}",
+                        f"SPEED: {round(mag(main[0].population[0].v), 2)}"], bg_color=(150, 210, 255))
         p.display.flip()
 
     # This sets an upper limit on the frame rate (here 100 frames per second)
     # often you won't be able
-    p.time.Clock().tick(50)
+    p.time.Clock().tick(40)

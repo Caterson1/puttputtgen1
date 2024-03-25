@@ -4,14 +4,30 @@ from constantinopal import *
 from vectors import *
 
 
+class HillValley:
+    def __init__(self, x_y, hill:bool = True):
+        self.pos = x_y
+        self.mult = int(hill) - 1
+
+    def check(self, input_position):
+        distance = mag(self.pos-input_position)
+        if distance < 1:
+            if distance > 0.5:
+                force_multiplier = 0.2 * distance
+            else:
+                force_multiplier = 0.05/distance
+            return norm(self.pos - input_position) * force_multiplier * self.mult
+        return Vec()
+
+
 class Playfield:
-    def __init__(self, width, height, holexy: Vec, startpos: Vec, hole_r: int = 0.05, extrawalls = []):
+    def __init__(self, width, height, holexy: Vec, startpos: Vec, hole_r: int = 0.05, obstacles = []):
         self.height = height
         self.width = width
         self.holexy = holexy
         self.startpos = startpos
         self.hole_r = hole_r
-        self.walls = []
+        self.obstacles = obstacles
 
 class Ball:
     def __init__(self, playfield: Playfield, angle: float, startpos:Vec = Vec(), speed: int = 10, color: Vec = None, wind: Vec = Vec()):
@@ -52,6 +68,8 @@ class Ball:
             self.v += self.a * dt
             self.a = sum(self.forces, Vec())/self.m
             self.forces = [norm(self.v) * friction]
+            for x in self.playfield.obstacles:
+                self.forces.append(x.check(self.pos))
             if self.in_hole():
                 print("SUCCESS")
                 self.success = 0
@@ -68,11 +86,11 @@ class Ball:
 
 class Population:
     def __init__(self, popsize, randomness, defaultball: Ball, survival_rate = 10):
-        self.population = [Ball(defaultball.playfield, random.randrange(0, 360), defaultball.pos,
+        self.population = [Ball(defaultball.playfield, random.randrange(0, 360)/2, defaultball.pos,
                                 mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in range(popsize)]
         self.randomness = randomness
         self.average_score = 0
-        self.best_score = 0
+        self.best_score = defaultball
 
     def all_landed(self):
         for ball in self.population:
@@ -84,7 +102,7 @@ class Population:
         new_pop = []
         self.average_score = sum([x.success for x in self.population])/len(self.population)
         self.population = sorted(self.population, key = lambda x: x.success)
-        self.best_score = self.population[0].success
+        self.best_score = self.population[0]
         for x in self.population[0:int(math.sqrt(len(self.population)))]:
             for xx in range(int(math.sqrt(len(self.population)))):
                 new_pop.append(x.varied_copy(self.randomness))
@@ -96,7 +114,7 @@ class Population:
             ball.step()
         if self.all_landed():
             self.reproduction()
-            self.randomness *= .99
+            self.randomness *= .7
             return True
         else:
             return False

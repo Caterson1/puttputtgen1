@@ -78,6 +78,9 @@ class Vec:
     def __abs__(self):
         return Vec(abs(self.x), abs(self.y), abs(self.z))
 
+    def __round__(self, n):
+        return Vec(round(self.x, n), round(self.y, n), round(self.z, n))
+
 def detuple(tuple):
     print(tuple)
     try:
