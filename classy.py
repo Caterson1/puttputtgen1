@@ -1,4 +1,5 @@
 import math
+import pygame as p
 
 from constantinopal import *
 from vectors import *
@@ -7,17 +8,29 @@ from vectors import *
 class HillValley:
     def __init__(self, x_y, hill:bool = True):
         self.pos = x_y
-        self.mult = int(hill) - 1
+        self.mult = 1 if hill else -1
 
     def check(self, input_position):
         distance = mag(self.pos-input_position)
         if distance < 1:
-            if distance > 0.5:
+            if distance < 0.5:
                 force_multiplier = 0.2 * distance
             else:
                 force_multiplier = 0.05/distance
-            return norm(self.pos - input_position) * force_multiplier * self.mult
+            return norm(input_position - self.pos) * force_multiplier * self.mult
         return Vec()
+
+class Moat:
+    def __init__(self, topleft, width, height):
+        self.topleft = topleft
+        self.width = width
+        self.height = height
+
+    def check(self, initposition):
+        if self.topleft.x < initposition.x < self.topleft.x + self.width and self.topleft.y - self.height < initposition.y < self.topleft.y:
+            return "Fail"
+        else:
+            return Vec()
 
 
 class Playfield:
@@ -39,7 +52,7 @@ class Ball:
         self.a = Vec()
         self.forces = [norm(self.v) * friction]
         self.angle = angle
-        self.m = 0.0425
+        self.m = 0.045
         self.success = None
         if color is None:
             self.color = (randvec()*255).__abs__()
@@ -69,7 +82,10 @@ class Ball:
             self.a = sum(self.forces, Vec())/self.m
             self.forces = [norm(self.v) * friction]
             for x in self.playfield.obstacles:
-                self.forces.append(x.check(self.pos))
+                if x.check(self.pos) == "Fail":
+                    self.v = Vec()
+                else:
+                    self.forces.append(x.check(self.pos))
             if self.in_hole():
                 print("SUCCESS")
                 self.success = 0
@@ -83,10 +99,13 @@ class Ball:
         return Ball(self.playfield, new_angle, self.pos_init, new_speed,
                     color=new_color)
 
+    def __repr__(self):
+        return f"Ball with angle: {self.angle}, Speed: {self.speed}, Velocity {vectorize(self.speed, self.angle)}"
+
 
 class Population:
     def __init__(self, popsize, randomness, defaultball: Ball, survival_rate = 10):
-        self.population = [Ball(defaultball.playfield, random.randrange(0, 360)/2, defaultball.pos,
+        self.population = [Ball(defaultball.playfield, random.uniform(0, 360), defaultball.pos,
                                 mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in range(popsize)]
         self.randomness = randomness
         self.average_score = 0

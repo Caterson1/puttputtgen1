@@ -5,7 +5,7 @@ from classy import *
 
 window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
 screen = p.display.set_mode((WIDTH, HEIGHT))
-playfield = Playfield(3, 6, Vec(.8, 5.2), Vec(1.5, 0.2), obstacles=[HillValley(Vec(1, 2)), HillValley(Vec(3, 4), False)])
+playfield = Playfield(3, 6, Vec(.8, 5.2), Vec(1.5, 0.2), obstacles=[HillValley(Vec(1, 2)), HillValley(Vec(2, 4), False)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
@@ -50,7 +50,7 @@ def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255), bg_col
         draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color, bg_color)
 
 
-main = [Population(100, .5, Ball(playfield, 45, Vec(0, .2), speed=1))]
+main = [Population(1024, .5, Ball(playfield, 45, Vec(1.5, 0.2), speed=1))]
 
 running = False
 while True:
@@ -78,6 +78,9 @@ while True:
                     running = False
                     print("PAUSE")
 
+            if event.key == p.K_RETURN:
+                print(main[0].best_score)
+
     if running:
         # background
 
@@ -86,8 +89,11 @@ while True:
                 if x.step():
                     screen.fill((150, 210, 255))
                     p.draw.rect(screen, (166, 203, 164), playfield_rect)
+                    for z in playfield.obstacles:
+                        p.draw.circle(screen, (0, 255, 0), ball_xy(z.pos), 1 * scale)
                 drawer(x.population)
         p.draw.circle(screen, (255, 255, 255), ball_xy(playfield.holexy), playfield.hole_r * scale)
+
         draw_more_text([f"Randomness: {main[0].randomness}",
                         f"Average Score: {main[0].average_score}",
                         f"Best Score: {main[0].best_score.success}",
