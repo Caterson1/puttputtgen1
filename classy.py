@@ -1,4 +1,5 @@
 import math
+import pygame as p
 
 from constantinopal import *
 from vectors import *
@@ -18,6 +19,18 @@ class HillValley:
                 force_multiplier = 0.05/distance
             return norm(self.pos - input_position) * force_multiplier * self.mult
         return Vec()
+
+class Moat:
+    def __init__(self, topleft, width, height):
+        self.topleft = topleft
+        self.width = width
+        self.height = height
+
+    def check(self, initposition):
+        if self.topleft.x < initposition.x < self.topleft.x + self.width and self.topleft.y - self.height < initposition.y < self.topleft.y:
+            return "Fail"
+        else:
+            return Vec()
 
 
 class Playfield:
@@ -69,7 +82,10 @@ class Ball:
             self.a = sum(self.forces, Vec())/self.m
             self.forces = [norm(self.v) * friction]
             for x in self.playfield.obstacles:
-                self.forces.append(x.check(self.pos))
+                if x.check(self.pos) == "Fail":
+                    self.v = Vec()
+                else:
+                    self.forces.append(x.check(self.pos))
             if self.in_hole():
                 print("SUCCESS")
                 self.success = 0
@@ -82,6 +98,9 @@ class Ball:
         new_color = ((self.angle - new_angle)/360 + (self.speed - new_speed)/self.speed)/2 * self.color + self.color
         return Ball(self.playfield, new_angle, self.pos_init, new_speed,
                     color=new_color)
+
+    def __repr__(self):
+        return f"Ball with angle: {self.angle}, Speed: {self.speed}, Velocity {vectorize(self.speed, self.angle)}"
 
 
 class Population:

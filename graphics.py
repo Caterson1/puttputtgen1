@@ -5,7 +5,7 @@ from classy import *
 
 window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
 screen = p.display.set_mode((WIDTH, HEIGHT))
-playfield = Playfield(3, 6, Vec(.8, 5.2), Vec(1.5, 0.2), obstacles=[HillValley(Vec(1, 2)), HillValley(Vec(3, 4), False)])
+playfield = Playfield(3, 6, Vec(1.5, 5.5), Vec(1.5, 0.2), obstacles=[Moat(Vec(0, 4.2), .8, .2), Moat(Vec(1, 4.2), 2, .2)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
@@ -78,6 +78,9 @@ while True:
                     running = False
                     print("PAUSE")
 
+            if event.key == p.K_RETURN :
+                print(main[0].best_score)
+
     if running:
         # background
 
@@ -86,6 +89,9 @@ while True:
                 if x.step():
                     screen.fill((150, 210, 255))
                     p.draw.rect(screen, (166, 203, 164), playfield_rect)
+                    for z in playfield.obstacles:
+                        if isinstance(z, Moat):
+                            p.draw.rect(screen, (0, 0, 200),  p.Rect(x0 + z.topleft.x * scale, y0 - z.topleft.y * scale, z.width * scale, z.height * scale))
                 drawer(x.population)
         p.draw.circle(screen, (255, 255, 255), ball_xy(playfield.holexy), playfield.hole_r * scale)
         draw_more_text([f"Randomness: {main[0].randomness}",
