@@ -33,14 +33,23 @@ class Moat:
             return Vec()
 
 
+class Wall:
+    def __init__(self, p1, p2):
+        self.p1 = p1
+        self.p2 = p2
+        self.x = p1.x
+        self.y = p1.y
+
+
 class Playfield:
-    def __init__(self, width, height, holexy: Vec, startpos: Vec, hole_r: int = 0.05, obstacles = []):
+    def __init__(self, width, height, holexy: Vec, startpos: Vec, hole_r: int = 0.05, obstacles = [], walls = []):
         self.height = height
         self.width = width
         self.holexy = holexy
         self.startpos = startpos
         self.hole_r = hole_r
         self.obstacles = obstacles
+        self.walls = walls
 
 class Ball:
     def __init__(self, playfield: Playfield, angle: float, startpos:Vec = Vec(), speed: int = 10, color: Vec = None, wind: Vec = Vec()):
@@ -69,14 +78,27 @@ class Ball:
 
     def step(self):
         if self.success is not True:
+            for w in self.playfield.walls:
+                if self.pos.x < w.x < self.pos.x + self.v.x * dt and self.pos.y < w.y:
+                    self.bounce_off_wall(Vec(-1, 0))
+                elif self.pos.x > w.x > self.pos.x + self.v.x * dt and self.pos.y < w.y:
+                    self.bounce_off_wall(Vec(1, 0))
+                # elif self.pos.y < w.y < self.pos.y + self.v.y * dt:
+                #     self.bounce_off_wall(Vec(0, -1))
+                # elif self.pos.y < w.y < self.pos.y + self.v.y * dt:
+                #     self.bounce_off_wall(Vec(0, 1))
             self.pos += self.v * dt
             if self.pos.x > self.playfield.width:
+                self.pos -= self.v * dt
                 self.bounce_off_wall(Vec(-1, 0))
             elif self.pos.x < 0:
+                self.pos -= self.v * dt
                 self.bounce_off_wall(Vec(1, 0))
             if self.pos.y > self.playfield.height:
+                self.pos -= self.v * dt
                 self.bounce_off_wall(Vec(0, -1))
             elif self.pos.y < 0:
+                self.pos -= self.v * dt
                 self.bounce_off_wall(Vec(0, 1))
             self.v += self.a * dt
             self.a = sum(self.forces, Vec())/self.m
