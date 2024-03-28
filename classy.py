@@ -160,6 +160,10 @@ class Population:
         else:
             return False
 
+class Ecosystem:
+    def __init__(self, number_of_families, default_family):
+        self.x = number_of_families
+
 
 
 

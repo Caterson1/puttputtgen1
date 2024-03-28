@@ -70,7 +70,7 @@ class Vec:
         t = [self.x, self.y, self.z]
         for x in range(len(t)):
             if t[x] > 255:
-                t[x] = 255
+                t[x] = 255 - ()
             if t[x] < 0:
                 t[x] = 0
         return (t[0], t[1], t[2])
