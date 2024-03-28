@@ -13,10 +13,9 @@ class HillValley:
     def check(self, input_position):
         distance = mag(self.pos-input_position)
         if distance < 1:
+            force_multiplier = 0.05/distance
             if distance < 0.5:
                 force_multiplier = 0.2 * distance
-            else:
-                force_multiplier = 0.05/distance
             return norm(input_position - self.pos) * force_multiplier * self.mult
         return Vec()
 
