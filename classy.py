@@ -104,9 +104,10 @@ class Ball:
 
 
 class Population:
-    def __init__(self, popsize, randomness, defaultball: Ball, survival_rate = 10):
+    def __init__(self, num_successful, randomness, defaultball: Ball, survival_rate = 10):
+        self.popsize = num_successful ** 2
         self.population = [Ball(defaultball.playfield, random.randrange(0, 360)/2, defaultball.pos,
-                                mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in range(popsize)]
+                                mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in range(self.popsize)]
         self.randomness = randomness
         self.average_score = 0
         self.best_score = defaultball
