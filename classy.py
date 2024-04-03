@@ -103,12 +103,15 @@ class Ball:
 
 
 class Population:
-    def __init__(self, popsize, randomness, defaultball: Ball, survival_rate = 10):
-        self.population = [Ball(defaultball.playfield, random.uniform(0, 360), defaultball.pos,
-                                mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in range(popsize)]
+    def __init__(self, num_successful, randomness, defaultball: Ball, survival_rate = 10):
+        self.popsize = num_successful ** 2
+        self.population = [Ball(defaultball.playfield, random.randrange(0, 360) / 2, defaultball.pos,
+                                mag(defaultball.v) + random.uniform(-mag(defaultball.v), mag(defaultball.v))) for i in
+                           range(self.popsize)]
         self.randomness = randomness
         self.average_score = 0
         self.best_score = defaultball
+        self.generation_count = 0
 
     def all_landed(self):
         for ball in self.population:
@@ -126,6 +129,7 @@ class Population:
                 new_pop.append(x.varied_copy(self.randomness))
         self.population = new_pop
         del new_pop
+        self.generation_count += 1
 
     def step(self):
         for ball in self.population:

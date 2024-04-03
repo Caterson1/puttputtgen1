@@ -50,7 +50,7 @@ def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255), bg_col
         draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color, bg_color)
 
 
-main = [Population(2500, .5, Ball(playfield, 45, Vec(1.5, 0.2), speed=3))]
+main = [Population(10, .5, Ball(playfield, 45, Vec(1.5, 0.2), speed=3))]
 
 running = False
 while True:
@@ -84,7 +84,7 @@ while True:
     if running:
         # background
 
-        for x in range(50):
+        for x in range(10):
             for x in main:
                 if x.step():
                     screen.fill((150, 210, 255))
@@ -103,4 +103,4 @@ while True:
 
     # This sets an upper limit on the frame rate (here 100 frames per second)
     # often you won't be able
-    # p.time.Clock().tick(100)
+    p.time.Clock().tick(100)
