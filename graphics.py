@@ -3,7 +3,7 @@ import pygame as p
 import sys
 from classy import *
 
-window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
+window_bounds = WIDTH, HEIGHT, scale = 600, 600, 80
 screen = p.display.set_mode((WIDTH, HEIGHT))
 playfield = Playfield(3, 6, Vec(.8, 5.2), Vec(1.5, .2), obstacles=[HillValley(Vec(1, 2)), HillValley(Vec(2, 4), False)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
@@ -50,7 +50,7 @@ def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255), bg_col
         draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color, bg_color)
 
 
-main = [Population(10, .5, Ball(playfield, 45, Vec(1.5, 0.2), speed=3))]
+main = [Population(10, .5, Ball(playfield, 45, Vec(1.5, 0.2), speed=1))]
 
 running = False
 while True:
@@ -84,13 +84,13 @@ while True:
     if running:
         # background
 
-        for x in range(10):
+        for x in range(1):
             for x in main:
                 if x.step():
                     screen.fill((150, 210, 255))
                     p.draw.rect(screen, (166, 203, 164), playfield_rect)
                     for z in playfield.obstacles:
-                        p.draw.circle(screen, (0, 255, 0), ball_xy(z.pos), 1 * scale)
+                        p.draw.circle(screen, (136, 253, 154), ball_xy(z.pos), 1 * scale)
                 drawer(x.population)
         p.draw.circle(screen, (255, 255, 255), ball_xy(playfield.holexy), playfield.hole_r * scale)
 
@@ -103,4 +103,4 @@ while True:
 
     # This sets an upper limit on the frame rate (here 100 frames per second)
     # often you won't be able
-    p.time.Clock().tick(100)
+    p.time.Clock().tick()
