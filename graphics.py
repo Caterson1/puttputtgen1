@@ -103,4 +103,4 @@ while True:
 
     # This sets an upper limit on the frame rate (here 100 frames per second)
     # often you won't be able
-    p.time.Clock().tick(40)
+    p.time.Clock().tick()
