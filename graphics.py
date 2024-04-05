@@ -5,12 +5,12 @@ from classy import *
 
 window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
 screen = p.display.set_mode((WIDTH, HEIGHT))
-playfield = Playfield(3, 6, Vec(1, .5), Vec(2, 0.5), walls=[Wall(Vec(1.5, 3), Vec(1.5, 0))])
+playfield = Playfield(3, 6, Vec(1.5, 3), Vec(1.5, 0.2), walls=[Wall(Vec(1, 2), Vec(1, 4), True), Wall(Vec(2, 2), Vec(2, 4), True), Wall(Vec(1, 2), Vec(2, 2), False)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
 p.font.init()
-font = p.font.SysFont('Monocraft', 20)
+font = p.font.SysFont('Monocraft', 10)
 
 
 def ball_xy(pos):
@@ -47,10 +47,10 @@ def draw_text(text, top_left=(0, 0), text_color=(255, 255, 255), bg_color=None):
 
 def draw_more_text(texts: list, top_left=Vec(), text_color=(255,255,255), bg_color=None):
     for x in texts:
-        draw_text(x, (top_left + Vec(0, 20) * texts.index(x)).tuple(2), text_color, bg_color)
+        draw_text(x, (top_left + Vec(0, 10) * texts.index(x)).tuple(2), text_color, bg_color)
 
 
-main = [Population(1024, 0.5, Ball(playfield, 45, Vec(1.5, 0.2), speed=2))]
+main = [Population(400, 0.5, Ball(playfield, 45, Vec(1.5, 0.2), speed=2))]
 
 running = False
 while True:

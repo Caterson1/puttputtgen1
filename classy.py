@@ -34,7 +34,8 @@ class Moat:
 
 
 class Wall:
-    def __init__(self, p1, p2):
+    def __init__(self, p1, p2, vertical):
+        self.vertical = vertical
         self.p1 = p1
         self.p2 = p2
         self.x = p1.x
@@ -79,14 +80,16 @@ class Ball:
     def step(self):
         if self.success is not True:
             for w in self.playfield.walls:
-                if self.pos.x < w.x < self.pos.x + self.v.x * dt and self.pos.y < w.y:
-                    self.bounce_off_wall(Vec(-1, 0))
-                elif self.pos.x > w.x > self.pos.x + self.v.x * dt and self.pos.y < w.y:
-                    self.bounce_off_wall(Vec(1, 0))
-                # elif self.pos.y < w.y < self.pos.y + self.v.y * dt:
-                #     self.bounce_off_wall(Vec(0, -1))
-                # elif self.pos.y < w.y < self.pos.y + self.v.y * dt:
-                #     self.bounce_off_wall(Vec(0, 1))
+                if w.vertical:
+                    if self.pos.x < w.x < self.pos.x + self.v.x * dt and w.p1.y < self.pos.y < w.p2.y:
+                        self.bounce_off_wall(Vec(-1, 0))
+                    elif self.pos.x > w.x > self.pos.x + self.v.x * dt and w.p1.y < self.pos.y < w.p2.y:
+                        self.bounce_off_wall(Vec(1, 0))
+                else:
+                    if self.pos.y < w.y < self.pos.y + self.v.y * dt and w.p1.x < self.pos.x < w.p2.x:
+                        self.bounce_off_wall(Vec(0, -1))
+                    elif self.pos.y > w.y > self.pos.y + self.v.y * dt and w.p1.x < self.pos.x < w.p2.x:
+                        self.bounce_off_wall(Vec(0, 1))
             self.pos += self.v * dt
             if self.pos.x > self.playfield.width:
                 self.pos -= self.v * dt
