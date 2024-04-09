@@ -5,7 +5,7 @@ from classy import *
 
 window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
 screen = p.display.set_mode((WIDTH, HEIGHT))
-playfield = Playfield(3, 6, Vec(1.5, 3), Vec(1.5, 0.2), walls=[Wall(Vec(1, 2), Vec(1, 4), True), Wall(Vec(2, 2), Vec(2, 4), True), Wall(Vec(1, 2), Vec(2, 2), False)])
+playfield = Playfield(3, 6, Vec(1.5, 3), Vec(1.5, 0.2), obstacles=[Moat(Vec(1.5, 4.5), 1.5, 4.5)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
