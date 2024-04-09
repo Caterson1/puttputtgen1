@@ -5,7 +5,7 @@ from classy import *
 
 window_bounds = WIDTH, HEIGHT, scale = 600, 600, 50
 screen = p.display.set_mode((WIDTH, HEIGHT))
-playfield = Playfield(3, 6, Vec(1.5, 3), Vec(1.5, 0.2), obstacles=[Moat(Vec(1.5, 4.5), 1.5, 4.5)])
+playfield = Playfield(3, 6, Vec(2.25, 5.25), Vec(0.75, 0.2), obstacles=[Moat(Vec(1.5, 4.5), 1.5, 4.5)])
 origin = x0, y0 = (WIDTH / 2) - playfield.width / 2 * scale, (
             HEIGHT - HEIGHT / 2) + playfield.height / 2 * scale  # This is the new origin
 playfield_rect = p.Rect(x0, y0 - playfield.height * scale, playfield.width * scale, playfield.height * scale)
@@ -90,7 +90,10 @@ while True:
                     screen.fill((150, 210, 255))
                     p.draw.rect(screen, (166, 203, 164), playfield_rect)
                     for z in playfield.obstacles:
-                        p.draw.circle(screen, (0, 255, 0), ball_xy(z.pos), 1 * scale)
+                        if isinstance(z, Moat):
+                            p.draw.rect(screen, (0, 0, 200),  p.Rect(x0 + z.topleft.x * scale, y0 - z.topleft.y * scale, z.width * scale, z.height * scale))
+                        if isinstance(z, HillValley):
+                            p.draw.circle(screen, (0, 255, 0), ball_xy(z.pos), 1 * scale)
                 drawer(x.population)
         p.draw.circle(screen, (255, 255, 255), ball_xy(playfield.holexy), playfield.hole_r * scale)
         for x in main:
