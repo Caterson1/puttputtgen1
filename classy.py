@@ -1,5 +1,4 @@
 import math
-import pygame as p
 
 from constantinopal import *
 from vectors import *
